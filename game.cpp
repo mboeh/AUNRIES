@@ -70,14 +70,24 @@ int main()
 
   assets.preload();
 
-  auto img = assets.loadTile("fan_world", "1,1");
-  Texture2D tex = LoadTextureFromImage(img);
+  Image screen = GenImageColor(240, 240, WHITE);
+  auto wall = assets.loadTile("fan_world", "1 1");
+  auto grass = assets.loadTile("fan_world", "33 13");
+  ImageDraw(&screen, wall, Rectangle{0, 0, 24, 24}, Rectangle{0, 0, 24, 24}, WHITE);
+  ImageDraw(&screen, wall, Rectangle{0, 0, 24, 24}, Rectangle{24, 0, 24, 24}, WHITE);
+  ImageDraw(&screen, wall, Rectangle{0, 0, 24, 24}, Rectangle{0, 24, 24, 24}, WHITE);
+  ImageDraw(&screen, grass, Rectangle{0, 0, 24, 24}, Rectangle{24, 24, 24, 24}, WHITE);
+
+  Texture2D tex = LoadTextureFromImage(screen);
+  UnloadImage(screen);
+
+  SetTextureFilter(tex, FILTER_POINT);
 
   while (!WindowShouldClose())
   {
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    DrawTexture(tex, 0, 0, WHITE);
+    DrawTextureEx(tex, Vector2{0, 0}, 0.0, 2.0, WHITE);
     EndDrawing();
   }
 

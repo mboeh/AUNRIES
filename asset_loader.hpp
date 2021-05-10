@@ -42,7 +42,7 @@ public:
     {
       return get<1>(*i);
     }
-    ts[name] = ImageFromImage(tilesets[tileset], tsd.tileRect(1, 1));
+    ts[name] = ImageFromImage(tilesets[tileset], tsd.tileRect(name));
     return ts[name];
   }
 };

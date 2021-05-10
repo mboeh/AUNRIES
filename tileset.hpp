@@ -1,4 +1,5 @@
 #include "sol/sol.hpp"
+#include <sstream>
 
 class TilesetDef
 {
@@ -18,5 +19,14 @@ public:
         static_cast<float>(grid_w),
         static_cast<float>(grid_h),
     };
+  }
+
+  Rectangle tileRect(string ref) const
+  {
+    std::istringstream parse(ref);
+    int x, y;
+    parse >> x >> std::ws >> y;
+    cerr << "parsed " << ref << " as " << x << "," << y << endl;
+    return tileRect(x, y);
   }
 };
