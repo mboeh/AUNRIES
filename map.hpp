@@ -2,43 +2,14 @@
 
 using namespace std;
 
-template <typename T>
-class Codex
-{
-  static inline int lastID = 0;
-  vector<T> entries;
-
-public:
-  class ID
-  {
-    friend Codex;
-
-    const int id;
-
-    ID(int id) : id{id} {}
-  };
-  ID add(T item)
-  {
-    entries.push_back(item);
-    return mint();
-  }
-  static const ID mint()
-  {
-    return ID(++lastID);
-  }
-  static const ID none()
-  {
-    return ID(0);
-  }
-};
-
 class Terrain
 {
 public:
   string name;
   bool passable;
+  string tile;
 
-  Terrain(string name, bool passable) : name{name}, passable{passable} {}
+  Terrain(string name, bool passable, string tile) : name{name}, passable{passable}, tile{tile} {}
 };
 
 class Tile

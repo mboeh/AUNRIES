@@ -1,21 +1,25 @@
 #include <raylib.h>
 #include <iostream>
 #include <fstream>
-#include "roster.hpp"
-#include "map.hpp"
-#define SOL_ALL_SAFETIES_ON
+
 #include "sol/sol.hpp"
+#include "game.hpp"
+#include "asset_loader.hpp"
 
 template <typename T>
 T fennel_eval(sol::state &lua, string filename)
 {
+  cerr << "loading source (" << filename << ")" << endl;
+
   sol::table fnl = lua["fennel"];
   sol::function fnl_eval = fnl["eval"];
-  ifstream f("config.fnl");
+  sol::table opts = lua.create_table_with("filename", filename);
+
+  ifstream f(filename);
   stringstream buf;
   buf << f.rdbuf();
-  T result = fnl_eval(buf.str());
 
+  T result = fnl_eval(buf.str(), opts);
   return result;
 }
 
@@ -26,46 +30,54 @@ void fennel_load(sol::state &lua, string filename)
 
 int main()
 {
+  auto game = make_shared<Game>();
+  AssetLoader assets(game);
+
   sol::state lua;
   lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::package, sol::lib::table, sol::lib::math);
 
   cerr << "loading fennel" << endl;
-  lua.require_file("fennel", "fennel.lua");
+  lua.require_file("fennel", "vendor/fennel.lua");
   cerr << "loading lume" << endl;
-  lua.require_file("lume", "lume.lua");
-  cout << "loading init.lua" << endl;
-  lua.safe_script_file("init.lua");
+  lua.require_file("lume", "vendor/lume.lua");
 
+  cerr << "loading config" << endl;
   sol::table config = fennel_eval<sol::table>(lua, "config.fnl");
 
-  auto roster = new Roster();
-  auto terrains = new Codex<Terrain>();
-
+  cerr << "configuring lua environment" << endl;
   sol::usertype<Roster> roster_type = lua.new_usertype<Roster>("Roster");
   roster_type["add"] = &Roster::add;
   roster_type["get"] = &Roster::get;
-  lua["roster"] = roster;
+  lua["roster"] = game->roster;
 
   sol::usertype<Fighter> fighter_type = lua.new_usertype<Fighter>("Fighter");
   fighter_type["name"] = &Fighter::name;
 
-  sol::usertype<Terrain> terrain_type = lua.new_usertype<Terrain>("Terrain", sol::constructors<Terrain(string, bool)>());
+  sol::usertype<Terrain> terrain_type = lua.new_usertype<Terrain>("Terrain", sol::constructors<Terrain(string, bool, string)>());
   terrain_type["name"] = &Terrain::name;
   terrain_type["passable"] = &Terrain::passable;
 
   sol::usertype<Codex<Terrain>> terrain_codex_type = lua.new_usertype<Codex<Terrain>>("TerrainCodex");
   terrain_codex_type["add"] = &Codex<Terrain>::add;
-  lua["terrains"] = terrains;
+  lua["terrains"] = game->terrain;
 
   fennel_load(lua, "roster.fnl");
   fennel_load(lua, "maps.fnl");
+  sol::table tiles = fennel_eval<sol::table>(lua, "tiles.fnl");
+  game->load_tilesets(tiles);
 
-  InitWindow(300, 300, config.get<string>("title").c_str());
+  InitWindow(config.get_or("width", 300), config.get_or("height", 300), config.get<string>("title").c_str());
+
+  assets.preload();
+
+  auto img = assets.loadTile("fan_world", "1,1");
+  Texture2D tex = LoadTextureFromImage(img);
 
   while (!WindowShouldClose())
   {
     BeginDrawing();
     ClearBackground(RAYWHITE);
+    DrawTexture(tex, 0, 0, WHITE);
     EndDrawing();
   }
 
