@@ -41,7 +41,7 @@ int main() {
     lua.require_file("lume", "vendor/lume.lua");
 
     cerr << "loading config" << endl;
-    auto config = fennel_eval<sol::table>(lua, "config.fnl");
+    auto config = fennel_eval<sol::table>(lua, "script/config.fnl");
 
     cerr << "configuring lua environment" << endl;
     sol::usertype<Roster> roster_type = lua.new_usertype<Roster>("Roster");
@@ -61,9 +61,9 @@ int main() {
     terrain_codex_type["add"] = &Codex<Terrain>::add;
     lua["terrains"] = game->terrain;
 
-    fennel_load(lua, "roster.fnl");
-    fennel_load(lua, "maps.fnl");
-    auto tiles = fennel_eval<sol::table>(lua, "tiles.fnl");
+    fennel_load(lua, "script/roster.fnl");
+    fennel_load(lua, "script/maps.fnl");
+    auto tiles = fennel_eval<sol::table>(lua, "script/tiles.fnl");
     game->load_tilesets(tiles);
 
     InitWindow(config.get_or("width", 300), config.get_or("height", 300), config.get<string>("title").c_str());
