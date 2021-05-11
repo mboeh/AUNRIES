@@ -1,4 +1,5 @@
 #include <string>
+#include <utility>
 
 using namespace std;
 
@@ -9,7 +10,7 @@ public:
   bool passable;
   string tile;
 
-  Terrain(string name, bool passable, string tile) : name{name}, passable{passable}, tile{tile} {}
+  Terrain(string name, bool passable, string tile) : name{std::move(name)}, passable{passable}, tile{std::move(tile)} {}
 };
 
 class Tile
@@ -28,7 +29,7 @@ public:
   const int height;
   vector<Tile> tiles;
 
-  Map(string name, int width, int height) : name{name}, width{width}, height{height}
+  Map(string name, int width, int height) : name{std::move(name)}, width{width}, height{height}
   {
     tiles.resize(width * height, Tile());
   }

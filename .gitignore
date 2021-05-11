@@ -1,3 +1,11 @@
 *.o
 game
 assets/
+.idea/
+AUNRIES.cbp
+CMakeCache.txt
+CMakeFiles/
+Testing/
+Makefile
+.*.sw?
+*.cmake

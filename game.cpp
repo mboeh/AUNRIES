@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <iostream>
 #include <fstream>
+#include <utility>
 
 #include "sol/sol.hpp"
 #include "game.hpp"
@@ -25,7 +26,7 @@ T fennel_eval(sol::state &lua, string filename)
 
 void fennel_load(sol::state &lua, string filename)
 {
-  fennel_eval<sol::object>(lua, filename);
+  fennel_eval<sol::object>(lua, std::move(filename));
 }
 
 int main()
@@ -42,7 +43,7 @@ int main()
   lua.require_file("lume", "vendor/lume.lua");
 
   cerr << "loading config" << endl;
-  sol::table config = fennel_eval<sol::table>(lua, "config.fnl");
+  auto config = fennel_eval<sol::table>(lua, "config.fnl");
 
   cerr << "configuring lua environment" << endl;
   sol::usertype<Roster> roster_type = lua.new_usertype<Roster>("Roster");
@@ -63,7 +64,7 @@ int main()
 
   fennel_load(lua, "roster.fnl");
   fennel_load(lua, "maps.fnl");
-  sol::table tiles = fennel_eval<sol::table>(lua, "tiles.fnl");
+  auto tiles = fennel_eval<sol::table>(lua, "tiles.fnl");
   game->load_tilesets(tiles);
 
   InitWindow(config.get_or("width", 300), config.get_or("height", 300), config.get<string>("title").c_str());
