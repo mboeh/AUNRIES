@@ -11,3 +11,5 @@ Makefile
 *.cmake
 *.tiled-project
 *.tiled-session
+.DS_Store
+maps/*.lua

@@ -11,23 +11,23 @@ add_executable(game src/game.cpp src/tileset.cpp src/main.cpp src/asset_loader.c
 target_link_libraries(game raylib)
 target_link_libraries(game lua)
 
-add_custom_target(buildMaps DEPENDS script/basic_map.lua assets/colors.lua assets/oryx_fan.lua)
+add_custom_target(buildMaps DEPENDS maps/basic_map.lua maps/colors.lua maps/oryx_fan.lua)
 add_custom_command(
-        OUTPUT script/basic_map.lua
-        COMMAND /Applications/Tiled.app/Contents/MacOS/Tiled --export-map lua ${CMAKE_CURRENT_SOURCE_DIR}/basic_map.tmx ${CMAKE_CURRENT_SOURCE_DIR}/script/basic_map.lua
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/basic_map.tmx
+        OUTPUT maps/basic_map.lua
+        COMMAND /Applications/Tiled.app/Contents/MacOS/Tiled --export-map lua maps/basic_map.tmx ${CMAKE_CURRENT_SOURCE_DIR}/maps/basic_map.lua
+        DEPENDS maps/basic_map.tmx
         VERBATIM
 )
 add_custom_command(
-        OUTPUT assets/colors.lua
-        COMMAND /Applications/Tiled.app/Contents/MacOS/Tiled --export-tileset lua ${CMAKE_CURRENT_SOURCE_DIR}/colors.tsx ${CMAKE_CURRENT_SOURCE_DIR}/assets/colors.lua
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/colors.tsx
+        OUTPUT maps/colors.lua
+        COMMAND /Applications/Tiled.app/Contents/MacOS/Tiled --export-tileset lua maps/colors.tsx ${CMAKE_CURRENT_SOURCE_DIR}/maps/colors.lua
+        DEPENDS maps/colors.tsx
         VERBATIM
 )
 add_custom_command(
-        OUTPUT assets/oryx_fan.lua
-        COMMAND /Applications/Tiled.app/Contents/MacOS/Tiled --export-tileset lua ${CMAKE_CURRENT_SOURCE_DIR}/oryx_fan.tsx ${CMAKE_CURRENT_SOURCE_DIR}/assets/oryx_fan.lua
-        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/oryx_fan.tsx
+        OUTPUT maps/oryx_fan.lua
+        COMMAND /Applications/Tiled.app/Contents/MacOS/Tiled --export-tileset lua maps/oryx_fan.tsx ${CMAKE_CURRENT_SOURCE_DIR}/maps/oryx_fan.lua
+        DEPENDS maps/oryx_fan.tsx
         VERBATIM
 )
 add_dependencies(game buildMaps)
