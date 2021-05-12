@@ -9,3 +9,5 @@ Testing/
 Makefile
 .*.sw?
 *.cmake
+*.tiled-project
+*.tiled-session

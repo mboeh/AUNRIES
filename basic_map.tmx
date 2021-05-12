@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.6.0" orientation="orthogonal" renderorder="right-down" width="16" height="16" tilewidth="24" tileheight="24" infinite="0" nextlayerid="7" nextobjectid="2">
+<map version="1.5" tiledversion="1.6.0" orientation="orthogonal" renderorder="right-down" width="16" height="16" tilewidth="24" tileheight="24" infinite="0" nextlayerid="8" nextobjectid="3">
  <tileset firstgid="1" source="oryx_fan.tsx"/>
  <tileset firstgid="2297" source="colors.tsx"/>
- <layer id="1" name="Base" width="16" height="16">
-  <data encoding="csv">
+ <group id="7" name="Decoration">
+  <layer id="1" name="Base" width="16" height="16">
+   <data encoding="csv">
 1150,1150,1150,1150,1150,1150,1150,1150,1150,1150,1150,1150,1150,1151,1150,1150,
 1150,1150,1150,1150,1150,1150,1150,1150,1150,1150,1150,1150,1150,1151,1150,1151,
 1150,1150,1150,1150,1150,1150,1150,1150,1150,1150,1150,1150,1150,1151,1150,1150,
@@ -21,9 +22,9 @@
 1151,1150,1150,1150,1150,1151,1150,1151,1150,1150,1151,1150,1150,1151,1151,1150,
 1151,1150,1150,1151,1151,1150,1150,1151,1150,1150,1150,1151,1150,1151,1151,1150
 </data>
- </layer>
- <layer id="2" name="Grass" width="16" height="16">
-  <data encoding="csv">
+  </layer>
+  <layer id="2" name="Grass" width="16" height="16">
+   <data encoding="csv">
 903,902,901,904,904,927,926,926,927,926,926,927,927,927,927,926,
 902,904,901,902,904,926,926,926,926,926,926,926,926,927,927,927,
 901,903,901,904,904,926,927,926,927,926,926,926,926,926,927,927,
@@ -41,9 +42,9 @@
 668,668,668,668,668,669,0,0,0,667,668,668,668,668,668,668,
 668,668,668,668,668,669,0,0,0,667,668,668,668,668,668,668
 </data>
- </layer>
- <layer id="3" name="Trees" width="16" height="16">
-  <data encoding="csv">
+  </layer>
+  <layer id="3" name="Trees" width="16" height="16">
+   <data encoding="csv">
 1073742561,0,0,0,0,1192,0,0,0,0,0,158,158,156,156,159,
 0,0,95,0,0,1192,0,0,0,0,159,159,159,157,157,156,
 0,0,0,0,0,1193,0,0,0,0,158,159,156,157,159,159,
@@ -61,8 +62,9 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
- </layer>
- <layer id="5" name="TERRAIN" width="16" height="16">
+  </layer>
+ </group>
+ <layer id="5" name="$terrain" width="16" height="16" opacity="0.5">
   <data encoding="csv">
 0,0,0,0,0,2297,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,2297,0,0,0,0,0,0,0,0,0,0,
@@ -82,8 +84,11 @@
 2297,2297,2297,2297,2297,2297,0,0,0,2297,2297,2297,2297,2297,2297,2297
 </data>
  </layer>
- <objectgroup id="6" name="TRIGGERS">
+ <objectgroup id="6" name="$triggers">
   <object id="1" name="goal" type="goal" x="12.7273" y="11.8182">
+   <point/>
+  </object>
+  <object id="2" name="player-spawn" x="178.182" y="321.818">
    <point/>
   </object>
  </objectgroup>
