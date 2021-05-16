@@ -6,6 +6,7 @@
 #include "sol/sol.hpp"
 #include "game.hpp"
 #include "asset_loader.hpp"
+#include "map_loader.hpp"
 
 template<typename T>
 T fennel_eval(sol::state &lua, string filename) {
@@ -30,6 +31,7 @@ void fennel_load(sol::state &lua, string filename) {
 int main() {
     auto game = make_shared<Game>();
     AssetLoader assets(game);
+    MapLoader maps;
 
     sol::state lua;
     lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::package, sol::lib::table,
@@ -52,31 +54,22 @@ int main() {
     sol::usertype<Fighter> fighter_type = lua.new_usertype<Fighter>("Fighter");
     fighter_type["name"] = &Fighter::name;
 
-    sol::usertype<Terrain> terrain_type = lua.new_usertype<Terrain>("Terrain",
-                                                                    sol::constructors<Terrain(string, bool, string)>());
-    terrain_type["name"] = &Terrain::name;
-    terrain_type["passable"] = &Terrain::passable;
-
-    sol::usertype<Codex<Terrain>> terrain_codex_type = lua.new_usertype<Codex<Terrain>>("TerrainCodex");
-    terrain_codex_type["add"] = &Codex<Terrain>::add;
-    lua["terrains"] = game->terrain;
-
     fennel_load(lua, "script/roster.fnl");
-    fennel_load(lua, "script/maps.fnl");
-    auto tiles = fennel_eval<sol::table>(lua, "script/tiles.fnl");
-    game->load_tilesets(tiles);
+
+    maps.loadTilemap("basic_map");
+    maps.loadTileset("oryx_fan");
+    maps.loadTileset("colors");
 
     InitWindow(config.get_or("width", 300), config.get_or("height", 300), config.get<string>("title").c_str());
 
     assets.preload();
 
     Image screen = GenImageColor(240, 240, WHITE);
-    auto wall = assets.loadTile("fan_world", "1 1");
-    auto grass = assets.loadTile("fan_world", "33 13");
-    ImageDraw(&screen, wall, Rectangle{0, 0, 24, 24}, Rectangle{0, 0, 24, 24}, WHITE);
-    ImageDraw(&screen, wall, Rectangle{0, 0, 24, 24}, Rectangle{24, 0, 24, 24}, WHITE);
-    ImageDraw(&screen, wall, Rectangle{0, 0, 24, 24}, Rectangle{0, 24, 24, 24}, WHITE);
-    ImageDraw(&screen, grass, Rectangle{0, 0, 24, 24}, Rectangle{24, 24, 24, 24}, WHITE);
+//
+//    ImageDraw(&screen, wall, Rectangle{0, 0, 24, 24}, Rectangle{0, 0, 24, 24}, WHITE);
+//    ImageDraw(&screen, wall, Rectangle{0, 0, 24, 24}, Rectangle{24, 0, 24, 24}, WHITE);
+//    ImageDraw(&screen, wall, Rectangle{0, 0, 24, 24}, Rectangle{0, 24, 24, 24}, WHITE);
+//    ImageDraw(&screen, grass, Rectangle{0, 0, 24, 24}, Rectangle{24, 24, 24, 24}, WHITE);
 
     Texture2D tex = LoadTextureFromImage(screen);
     UnloadImage(screen);
