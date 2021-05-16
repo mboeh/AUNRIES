@@ -64,7 +64,7 @@
 </data>
   </layer>
  </group>
- <layer id="5" name="$terrain" width="16" height="16" opacity="0.5">
+ <layer id="5" name="$terrain" width="16" height="16" visible="0" opacity="0.5">
   <data encoding="csv">
 0,0,0,0,0,2297,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,2297,0,0,0,0,0,0,0,0,0,0,

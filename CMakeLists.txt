@@ -7,7 +7,7 @@ include_directories(/usr/local/Cellar/raylib/3.0.0/include)
 include_directories(/usr/local/include/lua)
 link_directories(/usr/local/lib)
 link_directories(/usr/local/Cellar/raylib/3.0.0/lib)
-add_executable(game src/game.cpp src/main.cpp src/asset_loader.cpp src/roster.cpp src/map_loader.cpp src/map_loader.hpp)
+add_executable(game src/game.cpp src/main.cpp src/asset_loader.cpp src/roster.cpp src/tiled.cpp src/tiled.hpp src/map_scene.cpp src/map_scene.hpp)
 target_link_libraries(game raylib)
 target_link_libraries(game lua)
 

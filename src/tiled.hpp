@@ -21,6 +21,7 @@ public:
     std::string image;
     int imagewidth, imageheight;
     int tilecount;
+    int columns;
     std::vector<Tile> tiles;
 
     explicit TiledSet(const sol::table &tbl) {
@@ -33,6 +34,7 @@ public:
         imagewidth = tbl["imagewidth"];
         imageheight = tbl["imageheight"];
         tilecount = tbl["tilecount"];
+        columns = tbl["columns"];
 
         sol::table tls = tbl["tiles"];
         if (tls.size() > 0) {
@@ -45,6 +47,8 @@ public:
 };
 
 class TiledMap {
+public:
+
     class Tileset {
     public:
         std::string name;
@@ -84,6 +88,7 @@ class TiledMap {
         int id;
         std::string name;
         LayerType type;
+        bool visible;
         int width, height;
         std::vector<int> data;
         std::vector<Layer> layers;
@@ -92,6 +97,7 @@ class TiledMap {
         explicit Layer(const sol::table &tbl) {
             id = tbl["id"];
             name = tbl["name"];
+            visible = tbl["visible"];
             width = tbl.get_or("width", 0);
             height = tbl.get_or("height", 0);
             std::string t = tbl["type"];
@@ -99,10 +105,11 @@ class TiledMap {
                 type = LayerType::TILELAYER;
                 sol::table d = tbl["data"];
                 if (d.size() > 0) {
-                    data.reserve(d.size());
+                    std::cerr << "loading data: " << d.size() << std::endl;
                     for(int i = 1; i <= d.size(); i++) {
-                        data[i-1] = d[i];
+                        data.push_back(d[i]);
                     }
+                    std::cerr << "loaded into " << &data << " size: " << data.size() << "example: " << data[125] << std::endl;
                 }
             } else if (t == "objectlayer") {
                 type = LayerType::OBJECTLAYER;
@@ -124,7 +131,6 @@ class TiledMap {
         }
     };
 
-public:
     int width, height, tilewidth, tileheight;
     std::vector<Tileset> tilesets;
     std::vector<Layer> layers;
@@ -149,9 +155,9 @@ public:
     }
 };
 
-class MapLoader {
-    std::map<std::string, TiledSet> loadedTilesets;
-    std::map<std::string, TiledMap> loadedTilemaps;
+class TiledLoader {
+    std::map<std::string, TiledSet> tilesets;
+    std::map<std::string, TiledMap> tilemaps;
 
 public:
     TiledSet& loadTileset(std::string name);

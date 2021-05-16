@@ -2,11 +2,13 @@
 #include <iostream>
 #include <fstream>
 #include <utility>
+#include <algorithm>
 
 #include "sol/sol.hpp"
 #include "game.hpp"
 #include "asset_loader.hpp"
-#include "map_loader.hpp"
+#include "tiled.hpp"
+#include "map_scene.hpp"
 
 template<typename T>
 T fennel_eval(sol::state &lua, string filename) {
@@ -30,8 +32,9 @@ void fennel_load(sol::state &lua, string filename) {
 
 int main() {
     auto game = make_shared<Game>();
-    AssetLoader assets(game);
-    MapLoader maps;
+    auto assets = make_shared<AssetLoader>(game);
+    auto tiled = make_shared<TiledLoader>();
+    MapScene scene(assets, tiled);
 
     sol::state lua;
     lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::package, sol::lib::table,
@@ -56,29 +59,26 @@ int main() {
 
     fennel_load(lua, "script/roster.fnl");
 
-    maps.loadTilemap("basic_map");
-    maps.loadTileset("oryx_fan");
-    maps.loadTileset("colors");
+    int screenw = config.get_or("width", 300);
+    int screenh = config.get_or("height", 300);
 
-    InitWindow(config.get_or("width", 300), config.get_or("height", 300), config.get<string>("title").c_str());
+    InitWindow(screenw, screenh, config.get<string>("title").c_str());
 
-    assets.preload();
+    scene.makeImage(screenw/2, screenh/2);
+    scene.loadMap(config.get<string>("firstMap"));
+    scene.draw();
 
-    Image screen = GenImageColor(240, 240, WHITE);
-//
-//    ImageDraw(&screen, wall, Rectangle{0, 0, 24, 24}, Rectangle{0, 0, 24, 24}, WHITE);
-//    ImageDraw(&screen, wall, Rectangle{0, 0, 24, 24}, Rectangle{24, 0, 24, 24}, WHITE);
-//    ImageDraw(&screen, wall, Rectangle{0, 0, 24, 24}, Rectangle{0, 24, 24, 24}, WHITE);
-//    ImageDraw(&screen, grass, Rectangle{0, 0, 24, 24}, Rectangle{24, 24, 24, 24}, WHITE);
-
-    Texture2D tex = LoadTextureFromImage(screen);
-    UnloadImage(screen);
+    Texture2D tex = LoadTextureFromImage(*scene.getScreen());
 
     SetTextureFilter(tex, FILTER_POINT);
 
     while (!WindowShouldClose()) {
+        if (scene.draw()) {
+            UnloadTexture(tex);
+            tex = LoadTextureFromImage(*scene.getScreen());
+            SetTextureFilter(tex, FILTER_POINT);
+        }
         BeginDrawing();
-        ClearBackground(RAYWHITE);
         DrawTextureEx(tex, Vector2{0, 0}, 0.0, 2.0, WHITE);
         EndDrawing();
     }
