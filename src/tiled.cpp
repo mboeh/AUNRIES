@@ -1,4 +1,5 @@
 #include "tiled.hpp"
+#include <iostream>
 
 TiledSet& TiledLoader::loadTileset(std::string name) {
     if (tilesets.find(name) != tilesets.end()) {
@@ -26,12 +27,12 @@ TiledMap& TiledLoader::loadTilemap(std::string name) {
     return tilemaps.at(name);
 }
 
-Rectangle TiledMap::rect(int dataIdx) const {
-    return Rectangle{
-            (float) ((dataIdx % width) * tilewidth),
-            (float) ((dataIdx / width) * tileheight),
-            (float) tilewidth,
-            (float) tileheight
+sf::Rect<int> TiledMap::rect(int dataIdx) const {
+    return sf::Rect{
+        ((dataIdx % width) * tilewidth),
+        ((dataIdx / width) * tileheight),
+        tilewidth,
+        tileheight
     };
 }
 
@@ -104,12 +105,12 @@ TiledMap::Tileset::Tileset(const sol::table &tbl) {
     firstgid = tbl["firstgid"];
 }
 
-Rectangle TiledSet::rect(int tileId) const {
-    return Rectangle{
-            (float)((tileId%columns)*tilewidth),
-            (float)((tileId/columns)*tileheight),
-            (float)tilewidth,
-            (float)tileheight
+sf::Rect<int> TiledSet::rect(int tileId) const {
+    return sf::Rect{
+            (tileId%columns)*tilewidth,
+            (tileId/columns)*tileheight,
+            tilewidth,
+            tileheight
     };
 }
 

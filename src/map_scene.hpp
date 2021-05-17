@@ -1,15 +1,15 @@
 #pragma once
 
-#include <raylib.h>
 #include "asset_loader.hpp"
 #include "tiled.hpp"
+#include <SFML/Graphics.hpp>
 
 class MapScene {
     std::shared_ptr<Game> game;
     std::shared_ptr<AssetLoader> assets;
     std::shared_ptr<TiledLoader> tiled;
     std::optional<string> loadedMap;
-    std::optional<Image> screen;
+    sf::RenderTexture screen;
     bool needsDraw;
 
 public:
@@ -17,11 +17,11 @@ public:
 
     void loadMap(std::string name);
     bool draw();
-    bool draw(Image& img);
-    void drawLayer(Image& img, TiledMap& map, TiledMap::Layer& l);
+    bool draw(sf::RenderTexture& img);
+    void drawLayer(sf::RenderTexture& img, TiledMap& map, TiledMap::Layer& l);
     void makeImage(int width, int height);
 
-    std::optional<Image> getScreen() const {
+    const sf::RenderTexture& getScreen() const {
         return screen;
     }
 

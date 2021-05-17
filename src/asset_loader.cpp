@@ -1,13 +1,13 @@
 #include "asset_loader.hpp"
 
-Image AssetLoader::loadImage(std::string rawpath) {
+const sf::Texture& AssetLoader::loadImage(std::string rawpath) {
     auto path = resolvePath(std::move(rawpath));
     auto i = images.find(path);
     if (i != images.end()) {
         return i->second;
     }
     std::cerr << "loading asset from " << path << std::endl;
-    images[path] = LoadImage(path.c_str());
+    images[path].loadFromFile(path);
     return images[path];
 }
 

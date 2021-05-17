@@ -7,12 +7,10 @@ void MapScene::loadMap(std::string name) {
 }
 
 bool MapScene::draw() {
-    if (!screen) return false;
-
-    return draw(*screen);
+    return draw(screen);
 }
 
-bool MapScene::draw(Image &img) {
+bool MapScene::draw(sf::RenderTexture &img) {
     if (!loadedMap) return false;
     if (!needsDraw) return false;
 
@@ -24,7 +22,7 @@ bool MapScene::draw(Image &img) {
     return true;
 }
 
-void MapScene::drawLayer(Image &img, TiledMap &map, TiledMap::Layer &l) {
+void MapScene::drawLayer(sf::RenderTexture &img, TiledMap &map, TiledMap::Layer &l) {
     cerr << l.name << "(" << l.visible << ")" << endl;
     if (!l.visible) return;
     if (l.type == TiledMap::LayerType::GROUP) {
@@ -47,15 +45,18 @@ void MapScene::drawLayer(Image &img, TiledMap &map, TiledMap::Layer &l) {
                 auto trect = ts.rect(tileId);
                 auto drect = map.rect(idx);
                 // Clip to screen boundary
-                if (drect.x + drect.width > img.width) {
-                    drect.width = img.width - drect.x;
+                if (drect.left + drect.width > img.getSize().x) {
+                    drect.width = img.getSize().x - drect.left;
                     if (drect.width <= 0) continue;
                 }
-                if (drect.y + drect.height > img.height) {
-                    drect.height = img.height - drect.y;
+                if (drect.top + drect.height > img.getSize().y) {
+                    drect.height = img.getSize().y - drect.top;
                     if (drect.height <= 0) continue;
                 }
-                ImageDraw(&img, tsi, trect, drect, WHITE);
+                sf::Sprite tSp(tsi, trect);
+                tSp.setPosition(drect.left, drect.top);
+                img.draw(tSp);
+                //ImageDraw(&img, tsi, trect, drect, WHITE);
             } else {
                 // TODO: need to handle flipped tiles
                 // https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tile-flipping
@@ -66,7 +67,7 @@ void MapScene::drawLayer(Image &img, TiledMap &map, TiledMap::Layer &l) {
 }
 
 void MapScene::makeImage(int width, int height) {
-    screen = GenImageColor(width, height, BLACK);
+    screen.create(width, height);
 }
 
 void MapScene::onKeyPress(int code) {

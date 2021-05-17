@@ -3,6 +3,7 @@
 #include "codex.hpp"
 #include "roster.hpp"
 #include <fstream>
+#include <iostream>
 
 class Game {
 public:
@@ -14,7 +15,7 @@ public:
 
     template<typename T>
     T fennel_eval(string filename) {
-        cerr << "loading source (" << filename << ")" << endl;
+        std::cerr << "loading source (" << filename << ")" << std::endl;
 
         sol::table fnl = lua["fennel"];
         sol::function fnl_eval = fnl["eval"];

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <map>
-#include <raylib.h>
 #include "sol/sol.hpp"
+#include <SFML/Graphics.hpp>
 
 class TiledSet {
     class Tile {
@@ -24,7 +24,7 @@ public:
 
     explicit TiledSet(const sol::table &tbl);
 
-    Rectangle rect(int tileId) const;
+    sf::Rect<int> rect(int tileId) const;
 };
 
 class TiledMap {
@@ -76,7 +76,7 @@ public:
 
     explicit TiledMap(const sol::table &tbl);
 
-    Rectangle rect(int dataIdx) const;
+    sf::Rect<int> rect(int dataIdx) const;
 };
 
 class TiledLoader {
