@@ -14,7 +14,7 @@ bool MapScene::draw(sf::RenderTexture &img) {
     if (!loadedMap) return false;
     if (!needsDraw) return false;
 
-    auto map = tiled->loadTilemap(loadedMap.value());
+    auto &map = tiled->loadTilemap(loadedMap.value());
     for(auto i = map.layers.begin(); i < map.layers.end(); i++) {
         drawLayer(img, map, *i);
     }
@@ -76,9 +76,11 @@ void MapScene::onKeyPress(int code) {
             if(!loadedMap) return;
             cerr << "got T keypress" << endl;
             {
-                auto map = tiled->loadTilemap(loadedMap.value());
+                auto &map = tiled->loadTilemap(loadedMap.value());
                 for (auto i = map.layers.begin(); i < map.layers.end(); i++) {
                     if (i->name == "$terrain") {
+
+                        cerr << "toggling it: " << i->visible << " @ " << &*i << endl;
                         i->visible = !i->visible;
                         needsDraw = true;
                     }

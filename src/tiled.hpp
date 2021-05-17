@@ -77,6 +77,8 @@ public:
     explicit TiledMap(const sol::table &tbl);
 
     sf::Rect<int> rect(int dataIdx) const;
+
+    TiledMap(const TiledMap&) = delete;
 };
 
 class TiledLoader {

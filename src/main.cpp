@@ -31,6 +31,7 @@ int main() {
     window.setView(view);
 
     ImGui::SFML::Init(window);
+    float SCALE = 2.0f;
 
     scene.makeImage(screenw/2, screenh/2);
     scene.loadMap(game->config.get<string>("firstMap"));
@@ -66,7 +67,12 @@ int main() {
         window.draw(screen);
 
         ImGui::SFML::Update(window, deltaClock.restart());
+        ImGui::GetIO().FontGlobalScale = SCALE;
+
         ImGui::Begin("Sample window"); // begin window
+        if(ImGui::Button("Toggle Terrain")) {
+            scene.onKeyPress('t');
+        }
         ImGui::End();
         ImGui::SFML::Render(window);
         window.display();
