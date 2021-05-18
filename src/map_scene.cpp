@@ -1,8 +1,8 @@
 #include "map_scene.hpp"
 
-void MapScene::loadMap(std::string name) {
-    loadedMap = name;
-    tiled->loadTilemap(name);
+void MapScene::loadEncounter(const Scenario::Encounter &e) {
+    loadedMap = e.map;
+    tiled->loadTilemap(e.map);
     needsDraw = true;
 }
 

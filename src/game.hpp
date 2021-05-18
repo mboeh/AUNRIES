@@ -1,6 +1,7 @@
 #pragma once
 
 #include "codex.hpp"
+#include "scenario.hpp"
 #include "roster.hpp"
 #include <fstream>
 #include <iostream>
@@ -8,6 +9,7 @@
 class Game {
 public:
     Roster roster;
+    std::optional<Scenario> scenario;
     sol::state lua;
     sol::table config;
 

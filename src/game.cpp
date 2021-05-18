@@ -10,6 +10,8 @@ void Game::load() {
     lua.require_file("lume", "vendor/lume.lua");
     cerr << "loading config" << endl;
     config = fennel_eval<sol::table>("script/config.fnl");
+    cerr << "loading scenario" << endl;
+    scenario = Scenario(fennel_eval<sol::table>("script/" + config.get_or<std::string>("loadScenario", "scenario.fnl")));
 
     cerr << "configuring lua environment" << endl;
     sol::usertype<Roster> roster_type = lua.new_usertype<Roster>("Roster");

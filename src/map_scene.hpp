@@ -2,6 +2,7 @@
 
 #include "asset_loader.hpp"
 #include "tiled.hpp"
+#include "scenario.hpp"
 #include <SFML/Graphics.hpp>
 
 class MapScene {
@@ -15,7 +16,7 @@ class MapScene {
 public:
     MapScene(std::shared_ptr<Game> game, std::shared_ptr<AssetLoader> assets, std::shared_ptr<TiledLoader> tiled): game{std::move(game)}, assets{std::move(assets)}, tiled{std::move(tiled)}, needsDraw{false}{}
 
-    void loadMap(std::string name);
+    void loadEncounter(const Scenario::Encounter& e);
     bool draw();
     bool draw(sf::RenderTexture& img);
     void drawLayer(sf::RenderTexture& img, TiledMap& map, TiledMap::Layer& l);

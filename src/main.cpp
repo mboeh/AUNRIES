@@ -34,7 +34,7 @@ int main() {
     float SCALE = 2.0f;
 
     scene.makeImage(screenw/2, screenh/2);
-    scene.loadMap(game->config.get<string>("firstMap"));
+    scene.loadEncounter(game->scenario->currentEncounter());
 
     sf::Sprite screen;
     //Texture2D tex = LoadTextureFromImage(*scene.getScreen());
