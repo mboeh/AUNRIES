@@ -14,23 +14,25 @@ bool MapScene::draw(sf::RenderTexture &img) {
     if (!loadedMap) return false;
     if (!needsDraw) return false;
 
+    sf::Clock drawStart;
     auto &map = tiled->loadTilemap(loadedMap.value());
     for(auto i = map.layers.begin(); i < map.layers.end(); i++) {
         drawLayer(img, map, *i);
     }
     needsDraw = false;
+    cerr << "redrew map in " << drawStart.getElapsedTime().asSeconds() << "s" << endl;
     return true;
 }
 
 void MapScene::drawLayer(sf::RenderTexture &img, TiledMap &map, TiledMap::Layer &l) {
-    cerr << l.name << "(" << l.visible << ")" << endl;
     if (!l.visible) return;
+    sf::Clock drawStart;
+    int draws = 0;
     if (l.type == TiledMap::LayerType::GROUP) {
         for (auto i = l.layers.begin(); i < l.layers.end(); i++) {
             drawLayer(img, map, *i);
         }
     } else if (l.type == TiledMap::LayerType::TILELAYER) {
-        cerr << "drawing tiles from:" << &l.data << " size: " << l.data.size() << endl;
         for(int idx = 0; idx < l.data.size(); idx++) {
             int t = l.data[idx];
             if (!t) continue;
@@ -53,41 +55,42 @@ void MapScene::drawLayer(sf::RenderTexture &img, TiledMap &map, TiledMap::Layer 
                     drect.height = img.getSize().y - drect.top;
                     if (drect.height <= 0) continue;
                 }
-                sf::Sprite tSp(tsi, trect);
+                sf::Sprite tSp(*tsi, trect);
                 tSp.setPosition(drect.left, drect.top);
+                draws++;
                 img.draw(tSp);
-                //ImageDraw(&img, tsi, trect, drect, WHITE);
             } else {
                 // TODO: need to handle flipped tiles
                 // https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tile-flipping
-                cerr << "bad tile? " << t << endl;
+                //cerr << "bad tile? " << t << endl;
             }
         }
     }
+    cerr << "drew " << l.name << " (" << draws << " sprites) in " << drawStart.getElapsedTime().asSeconds() << "s" << endl;
 }
 
 void MapScene::makeImage(int width, int height) {
     screen.create(width, height);
 }
 
-void MapScene::onKeyPress(int code) {
-    switch (code) {
-        case 't':
-            if(!loadedMap) return;
-            cerr << "got T keypress" << endl;
-            {
-                auto &map = tiled->loadTilemap(loadedMap.value());
-                for (auto i = map.layers.begin(); i < map.layers.end(); i++) {
-                    if (i->name == "$terrain") {
-
-                        cerr << "toggling it: " << i->visible << " @ " << &*i << endl;
-                        i->visible = !i->visible;
-                        needsDraw = true;
-                    }
-                }
-            }
+void MapScene::onKeyPress(const sf::Event& event) {
+    switch (event.key.code) {
+        case sf::Keyboard::T:
+            toggleDebugTerrain();
             break;
         default:
-            cerr << "Unhandled keypress: " << code << endl;
+            cerr << "Unhandled keypress: " << event.key.code << endl;
+    }
+}
+
+void MapScene::toggleDebugTerrain() {
+    if(!loadedMap) return;
+
+    auto &map = tiled->loadTilemap(loadedMap.value());
+    for (auto i = map.layers.begin(); i < map.layers.end(); i++) {
+        if (i->name == "$terrain") {
+            i->visible = !i->visible;
+            needsDraw = true;
+        }
     }
 }

@@ -13,7 +13,7 @@ class MapScene {
     bool needsDraw;
 
 public:
-    MapScene(std::shared_ptr<Game> game, std::shared_ptr<AssetLoader> assets, std::shared_ptr<TiledLoader> tiled): game{std::move(game)}, assets{std::move(assets)}, tiled{std::move(tiled)}{}
+    MapScene(std::shared_ptr<Game> game, std::shared_ptr<AssetLoader> assets, std::shared_ptr<TiledLoader> tiled): game{std::move(game)}, assets{std::move(assets)}, tiled{std::move(tiled)}, needsDraw{false}{}
 
     void loadMap(std::string name);
     bool draw();
@@ -25,5 +25,7 @@ public:
         return screen;
     }
 
-    void onKeyPress(int code);
+    void toggleDebugTerrain();
+
+    void onKeyPress(const sf::Event &event);
 };

@@ -42,6 +42,8 @@ int main() {
     //SetTextureFilter(tex, FILTER_POINT);
     sf::Clock deltaClock;
 
+    bool showDebugUI = false;
+
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -49,36 +51,38 @@ int main() {
 
             if (event.type == sf::Event::Closed) {
                 window.close();
+            } else if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Hyphen) {
+                    showDebugUI = !showDebugUI;
+                } else {
+                    scene.onKeyPress(event);
+                }
             }
         }
-//        while (int k = GetKeyPressed()) {
-//            scene.onKeyPress(k);
-//        }
-        //ImGui::ShowDemoWindow();
-
 
         if (scene.draw()) {
-            cerr << "time to draw" << endl;
             screen.setTexture(scene.getScreen().getTexture());
             screen.setScale(2.0, 2.0);
-            //screen.setRotation(180.0);
-            //window.clear(sf::Color(0,0,0,255));
         }
+
         window.draw(screen);
 
         ImGui::SFML::Update(window, deltaClock.restart());
         ImGui::GetIO().FontGlobalScale = SCALE;
 
-        ImGui::Begin("Sample window"); // begin window
-        if(ImGui::Button("Toggle Terrain")) {
-            scene.onKeyPress('t');
+        if(showDebugUI) {
+            ImGui::Begin("Sample window"); // begin window
+            if (ImGui::Button("Toggle Terrain")) {
+                scene.toggleDebugTerrain();
+            }
+            if (ImGui::Button("Hide Debug")) {
+                showDebugUI = false;
+            }
+            ImGui::End();
         }
-        ImGui::End();
         ImGui::SFML::Render(window);
+
         window.display();
-//        BeginDrawing();
-//        DrawTextureEx(tex, Vector2{0, 0}, 0.0, 2.0, WHITE);
-//        EndDrawing();
     }
     ImGui::SFML::Shutdown();
 

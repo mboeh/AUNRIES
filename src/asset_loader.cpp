@@ -1,13 +1,15 @@
 #include "asset_loader.hpp"
 
-const sf::Texture& AssetLoader::loadImage(std::string rawpath) {
+const std::shared_ptr<sf::Texture> AssetLoader::loadImage(std::string rawpath) {
     auto path = resolvePath(std::move(rawpath));
-    auto i = images.find(path);
-    if (i != images.end()) {
-        return i->second;
+
+    if (!images[path]) {
+        std::cerr << "loading asset from " << path << std::endl;
+        auto tex = make_shared<sf::Texture>();
+        tex->loadFromFile(path);
+        images[path] = std::move(tex);
     }
-    std::cerr << "loading asset from " << path << std::endl;
-    images[path].loadFromFile(path);
+
     return images[path];
 }
 
