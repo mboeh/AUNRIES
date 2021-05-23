@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.6.0" orientation="orthogonal" renderorder="right-down" width="16" height="16" tilewidth="24" tileheight="24" infinite="0" nextlayerid="8" nextobjectid="3">
+<map version="1.5" tiledversion="1.6.0" orientation="orthogonal" renderorder="right-down" width="16" height="16" tilewidth="24" tileheight="24" infinite="0" nextlayerid="9" nextobjectid="17">
  <tileset firstgid="1" source="oryx_fan.tsx"/>
  <tileset firstgid="2297" source="colors.tsx"/>
+ <tileset firstgid="2361" source="oryx_fan_creatures.tsx"/>
  <group id="7" name="Decoration">
   <layer id="1" name="Base" width="16" height="16">
    <data encoding="csv">
@@ -84,12 +85,18 @@
 2297,2297,2297,2297,2297,2297,0,0,0,2297,2297,2297,2297,2297,2297,2297
 </data>
  </layer>
- <objectgroup id="6" name="$triggers">
+ <objectgroup id="6" name="$triggers" opacity="0.5">
   <object id="1" name="goal" type="goal" x="12.7273" y="11.8182">
    <point/>
   </object>
   <object id="2" name="player-spawn" x="178.182" y="321.818">
    <point/>
   </object>
+ </objectgroup>
+ <objectgroup id="8" name="$enemies">
+  <object id="13" name="boss" gid="2385" x="72" y="48" width="24" height="24"/>
+  <object id="14" name="thief1" gid="2383" x="72" y="144" width="24" height="24"/>
+  <object id="15" name="thief2" gid="2383" x="144" y="120" width="24" height="24"/>
+  <object id="16" name="merc" gid="2382" x="216" y="144" width="24" height="24"/>
  </objectgroup>
 </map>

@@ -2,7 +2,11 @@
 
 void MapScene::loadEncounter(const Scenario::Encounter &e) {
     loadedMap = e.map;
-    tiled->loadTilemap(e.map);
+    auto &map = tiled->loadTilemap(e.map);
+    auto layer = map.getLayer(e.deploy);
+    assert(layer);
+    encounter.reset();
+    encounter.deploy(*layer);
     needsDraw = true;
 }
 
@@ -19,6 +23,7 @@ bool MapScene::draw(sf::RenderTexture &img) {
     for(auto i = map.layers.begin(); i < map.layers.end(); i++) {
         drawLayer(img, map, *i);
     }
+    drawEncounter(img, map, encounter);
     needsDraw = false;
     cerr << "redrew map in " << drawStart.getElapsedTime().asSeconds() << "s" << endl;
     return true;
@@ -26,8 +31,6 @@ bool MapScene::draw(sf::RenderTexture &img) {
 
 void MapScene::drawLayer(sf::RenderTexture &img, TiledMap &map, TiledMap::Layer &l) {
     if (!l.visible) return;
-    sf::Clock drawStart;
-    int draws = 0;
     if (l.type == TiledMap::LayerType::GROUP) {
         for (auto i = l.layers.begin(); i < l.layers.end(); i++) {
             drawLayer(img, map, *i);
@@ -36,37 +39,48 @@ void MapScene::drawLayer(sf::RenderTexture &img, TiledMap &map, TiledMap::Layer 
         for(int idx = 0; idx < l.data.size(); idx++) {
             int t = l.data[idx];
             if (!t) continue;
-            auto it = std::find_if(map.tilesets.begin(), map.tilesets.end(), [&](auto &ts) {
-                auto tsx = tiled->loadTileset(ts.name);
-                return ts.firstgid <= t && ts.firstgid + tsx.tilecount > t;
-            });
-            if (it != map.tilesets.end()) {
-                auto ts = tiled->loadTileset(it->name);
-                auto tsi = assets->loadImage(ts.image);
-                int tileId = t - it->firstgid;
-                auto trect = ts.rect(tileId);
-                auto drect = map.rect(idx);
-                // Clip to screen boundary
-                if (drect.left + drect.width > img.getSize().x) {
-                    drect.width = img.getSize().x - drect.left;
-                    if (drect.width <= 0) continue;
-                }
-                if (drect.top + drect.height > img.getSize().y) {
-                    drect.height = img.getSize().y - drect.top;
-                    if (drect.height <= 0) continue;
-                }
-                sf::Sprite tSp(*tsi, trect);
-                tSp.setPosition(drect.left, drect.top);
-                draws++;
-                img.draw(tSp);
-            } else {
-                // TODO: need to handle flipped tiles
-                // https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tile-flipping
-                //cerr << "bad tile? " << t << endl;
-            }
+            drawTile(img, map, t, map.tileX(idx), map.tileY(idx));
         }
     }
-    cerr << "drew " << l.name << " (" << draws << " sprites) in " << drawStart.getElapsedTime().asSeconds() << "s" << endl;
+}
+
+
+void MapScene::drawEncounter(sf::RenderTexture &img, TiledMap &map, const Encounter& encounter) {
+    for(auto &piece: encounter.pieces) {
+        std::cerr << "drawing piece " << piece.name << std::endl;
+        drawTile(img, map, piece.tileID, piece.x, piece.y);
+    }
+}
+
+inline void MapScene::drawTile(sf::RenderTexture &img, TiledMap &map, int tileID, int x, int y) {
+    auto it = std::find_if(map.tilesets.begin(), map.tilesets.end(), [&](auto &ts) {
+        auto tsx = tiled->loadTileset(ts.name);
+        return ts.firstgid <= tileID && ts.firstgid + tsx.tilecount > tileID;
+    });
+    if (it != map.tilesets.end()) {
+        auto ts = tiled->loadTileset(it->name);
+        auto tsi = assets->loadImage(ts.image);
+        tileID -= it->firstgid;
+        auto trect = ts.rect(tileID);
+        auto drect = map.rect(x, y);
+        std::cerr << "drawing " << tileID << " at " << x << "," << y << std::endl;
+        // Clip to screen boundary
+        if (drect.left + drect.width > img.getSize().x) {
+            drect.width = img.getSize().x - drect.left;
+            if (drect.width <= 0) return;
+        }
+        if (drect.top + drect.height > img.getSize().y) {
+            drect.height = img.getSize().y - drect.top;
+            if (drect.height <= 0) return;
+        }
+        sf::Sprite tSp(*tsi, trect);
+        tSp.setPosition(drect.left, drect.top);
+        img.draw(tSp);
+    } else {
+        // TODO: need to handle flipped tiles
+        // https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tile-flipping
+        //cerr << "bad tile? " << t << endl;
+    }
 }
 
 void MapScene::makeImage(int width, int height) {

@@ -43,6 +43,7 @@ public:
         int id;
         std::string name;
         std::string type;
+        int tileID;
         double x, y;
 
         explicit Object(const sol::table &tbl);
@@ -75,10 +76,36 @@ public:
     std::vector<Layer> layers;
 
     explicit TiledMap(const sol::table &tbl);
-
-    sf::Rect<int> rect(int dataIdx) const;
-
     TiledMap(const TiledMap&) = delete;
+
+
+    inline sf::Rect<int> rect(int dataIdx) const {
+        return sf::Rect{
+                tileX(dataIdx) * tilewidth,
+                tileY(dataIdx) * tileheight,
+                tilewidth,
+                tileheight
+        };
+    }
+
+    inline sf::Rect<int> rect(int x, int y) {
+        return sf::Rect{
+                x * tilewidth,
+                y * tileheight,
+                tilewidth,
+                tileheight
+        };
+    }
+
+    inline int tileX(int dataIdx) const {
+        return dataIdx % width;
+    }
+
+    inline int tileY(int dataIdx) const {
+        return dataIdx / width;
+    }
+
+    const Layer* getLayer(const std::string& name);
 };
 
 class TiledLoader {

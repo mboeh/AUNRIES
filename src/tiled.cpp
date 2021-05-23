@@ -27,14 +27,6 @@ TiledMap& TiledLoader::loadTilemap(std::string name) {
     return tilemaps.at(name);
 }
 
-sf::Rect<int> TiledMap::rect(int dataIdx) const {
-    return sf::Rect{
-        ((dataIdx % width) * tilewidth),
-        ((dataIdx / width) * tileheight),
-        tilewidth,
-        tileheight
-    };
-}
 
 TiledMap::TiledMap(const sol::table &tbl) {
     width = tbl["width"];
@@ -55,6 +47,16 @@ TiledMap::TiledMap(const sol::table &tbl) {
     }
 }
 
+const TiledMap::Layer* TiledMap::getLayer(const std::string& name) {
+    for (auto i = layers.begin(); i < layers.end(); i++) {
+        if (i->name == name) {
+            return &*i;
+        }
+    }
+    return nullptr;
+}
+
+
 TiledMap::Layer::Layer(const sol::table &tbl) {
     id = tbl["id"];
     name = tbl["name"];
@@ -73,7 +75,7 @@ TiledMap::Layer::Layer(const sol::table &tbl) {
             }
             std::cerr << "loaded into " << &data << " size: " << data.size() << "example: " << data[125] << std::endl;
         }
-    } else if (t == "objectlayer") {
+    } else if (t == "objectgroup") {
         type = LayerType::OBJECTLAYER;
         sol::table oba = tbl["objects"];
         for (int i = 1; i <= oba.size(); i++) {
@@ -98,6 +100,7 @@ TiledMap::Object::Object(const sol::table &tbl) {
     type = tbl["type"];
     x = tbl["x"];
     y = tbl["y"];
+    tileID = tbl.get_or("gid", -1);
 }
 
 TiledMap::Tileset::Tileset(const sol::table &tbl) {
@@ -137,5 +140,5 @@ TiledSet::TiledSet(const sol::table &tbl) {
 
 TiledSet::Tile::Tile(const sol::table &tbl) {
     id = tbl["id"];
-    type = tbl["type"];
+    type = tbl.get_or<std::string>("type", "unknown");
 }

@@ -9,10 +9,12 @@ public:
     public:
         std::string title;
         std::string map;
+        std::string deploy;
 
         explicit Encounter(const sol::table& tbl) {
             title = tbl["title"];
             map = tbl["map"];
+            deploy = tbl["deploy"];
         }
     };
     std::string title;
