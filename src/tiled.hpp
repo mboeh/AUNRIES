@@ -5,14 +5,33 @@
 #include <SFML/Graphics.hpp>
 
 class TiledSet {
+public:
+    struct Animation {
+        struct Frame {
+            int tileID, duration;
+        };
+        std::vector<Frame> frames;
+
+        explicit Animation(const sol::table &tbl) {
+            for(int i = 1; i <= tbl.size(); i++) {
+                frames.emplace_back(Frame{
+                   .tileID = tbl[i]["tileid"],
+                   .duration = tbl[i]["duration"],
+                });
+            }
+        }
+    };
+
     class Tile {
     public:
         int id;
         std::string type;
+        std::optional<Animation> animation;
 
+        Tile(int id): id{id} {};
         explicit Tile(const sol::table &tbl);
     };
-public:
+
     std::string name;
     int tilewidth, tileheight;
     int gridwidth, gridheight;
@@ -24,6 +43,14 @@ public:
 
     explicit TiledSet(const sol::table &tbl);
 
+    Tile getTile(int tileID) const {
+        for(auto &t : tiles) {
+            if (t.id == tileID) {
+                return t;
+            }
+        }
+        return Tile(tileID);
+    }
     sf::Rect<int> rect(int tileId) const;
 };
 

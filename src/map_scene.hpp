@@ -13,6 +13,7 @@ class MapScene {
     std::optional<string> loadedMap;
     sf::RenderTexture screen;
     Encounter encounter;
+    std::map<int, sf::Clock> animClocks;
     bool needsDraw;
 
 public:

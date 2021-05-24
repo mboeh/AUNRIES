@@ -141,4 +141,8 @@ TiledSet::TiledSet(const sol::table &tbl) {
 TiledSet::Tile::Tile(const sol::table &tbl) {
     id = tbl["id"];
     type = tbl.get_or<std::string>("type", "unknown");
+    auto anim = tbl.get<sol::optional<sol::table>>("animation");
+    if (anim.has_value()) {
+        animation = Animation(anim.value());
+    }
 }

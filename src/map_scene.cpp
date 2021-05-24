@@ -16,7 +16,9 @@ bool MapScene::draw() {
 
 bool MapScene::draw(sf::RenderTexture &img) {
     if (!loadedMap) return false;
-    if (!needsDraw) return false;
+    // FIXME need to translate to a FPS approach based on
+    // animClock
+    //if (!needsDraw) return false;
 
     sf::Clock drawStart;
     auto &map = tiled->loadTilemap(loadedMap.value());
@@ -25,7 +27,7 @@ bool MapScene::draw(sf::RenderTexture &img) {
     }
     drawEncounter(img, map, encounter);
     needsDraw = false;
-    cerr << "redrew map in " << drawStart.getElapsedTime().asSeconds() << "s" << endl;
+    //cerr << "redrew map in " << drawStart.getElapsedTime().asSeconds() << "s" << endl;
     return true;
 }
 
@@ -47,7 +49,6 @@ void MapScene::drawLayer(sf::RenderTexture &img, TiledMap &map, TiledMap::Layer 
 
 void MapScene::drawEncounter(sf::RenderTexture &img, TiledMap &map, const Encounter& encounter) {
     for(auto &piece: encounter.pieces) {
-        std::cerr << "drawing piece " << piece.name << std::endl;
         drawTile(img, map, piece.tileID, piece.x, piece.y);
     }
 }
@@ -61,9 +62,17 @@ inline void MapScene::drawTile(sf::RenderTexture &img, TiledMap &map, int tileID
         auto ts = tiled->loadTileset(it->name);
         auto tsi = assets->loadImage(ts.image);
         tileID -= it->firstgid;
+        auto tile = ts.getTile(tileID);
+        if (tile.animation.has_value()) {
+            // this is dog shit FIXME
+            auto& anim = tile.animation.value();
+            auto& clock = animClocks[tileID];
+            int f = int(clock.getElapsedTime().asMilliseconds()) % (anim.frames[0].duration * anim.frames.size());
+            f /= anim.frames[0].duration;
+            tileID = tile.animation.value().frames[f].tileID;
+        }
         auto trect = ts.rect(tileID);
         auto drect = map.rect(x, y);
-        std::cerr << "drawing " << tileID << " at " << x << "," << y << std::endl;
         // Clip to screen boundary
         if (drect.left + drect.width > img.getSize().x) {
             drect.width = img.getSize().x - drect.left;

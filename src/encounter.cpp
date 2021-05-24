@@ -11,7 +11,7 @@ void Encounter::deploy(const TiledMap::Layer &l) {
             .id = obj.id,
             .name = obj.name,
             .x = (int)(obj.x) / 24, // FIXME
-            .y = (int)(obj.y - 0.01) / 24,
+            .y = (int)(obj.y - 0.01) / 24, // GAHH FIXME
             .tileID = obj.tileID,
         });
     }
